@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Partes - Aseguradora XYZ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+            position: relative;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        input[type="file"] {
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            left: 0;
+        }
+
+        footer p {
+            margin: 5px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to right, #007bff, #00bfff);
+            z-index: -1;
+        }
+
+        .decoration::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #007bff;
+        }
+
+        .decoration::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background-color: #007bff;
+        }
+
+        /* Other Options */
+        .other-options {
+            margin-top: 30px;
+        }
+
+        .other-options ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .other-options ul li {
+            margin-bottom: 10px;
+        }
+
+        .other-options ul li a {
+            display: block;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .other-options ul li a:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="decoration"></div>
+    <div class="container">
+        <h1>Ver Partes</h1>
+        <p>Lista: </p>
+        <ul id="listaPartes">
+            <!-- Aquí se agregarán dinámicamente los partes -->
+        </ul>
+
+        <a href="index.html" class="btn">Volver</a>
+    </div>
+    <footer>
+        <p>Información de contacto:</p>
+        <p>Dirección: Av. Principal #123</p>
+        <p>Teléfono: 123-456-789</p>
+        <p>Correo electrónico: info@aseguradoraxyz.com</p>
+    </footer>
+
+    <script>
+        var partes = JSON.parse(localStorage.getItem('partes')) || [];
+
+        function obtenerParametro(nombre) {
+            var urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(nombre);
+        }
+
+        var tipo = obtenerParametro("tipo"); 
+        var descripcion = obtenerParametro("descripcion");
+        var direccionFoto = obtenerParametro("direccionFoto");
+
+        console.log("Tipo:", tipo);
+        console.log("Descripción:", descripcion);
+        console.log("Dirección de la foto:", direccionFoto);
+
+        if (tipo && descripcion && direccionFoto) {
+            console.log("Agregando parte...");
+            agregarParte(tipo, descripcion, direccionFoto);
+        }        
+
+        function agregarParte(tipo, descripcion, direccionFoto) {
+            if (tipo && descripcion && direccionFoto) {
+                var nuevaParte = {
+                    tipo: tipo,
+                    descripcion: descripcion,
+                    foto: direccionFoto, // Usamos la dirección de la foto proporcionada
+                    estado: "En espera de revisión"
+                };
+
+                partes.push(nuevaParte);
+                localStorage.setItem('partes', JSON.stringify(partes));
+                console.log("Parte agregada:", nuevaParte);
+            }
+        }
+
+        function mostrarPartes() {
+            var listaPartes = document.getElementById("listaPartes");
+            listaPartes.innerHTML = '';
+
+            partes.forEach(function(parte) {
+                if (parte) {
+                    var listItem = document.createElement("li");
+                    listItem.innerHTML = `
+                        <strong>Tipo:</strong> ${parte.tipo}<br>
+                        <strong>Descripción:</strong> ${parte.descripcion}<br>
+                        <img src="${parte.foto}" alt="Foto del incidente"><br><br>
+                    `;
+                    listaPartes.appendChild(listItem);
+                }
+            });
+        }
+
+        window.onload = function() {
+            mostrarPartes();
+        };
+    </script>
+</body>
+</html>

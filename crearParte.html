@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacer Parte - Aseguradora XYZ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+            position: relative;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        input[type="file"] {
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            left: 0;
+        }
+
+        footer p {
+            margin: 5px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to right, #007bff, #00bfff);
+            z-index: -1;
+        }
+
+        .decoration::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #007bff;
+        }
+
+        .decoration::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background-color: #007bff;
+        }
+
+        /* Other Options */
+        .other-options {
+            margin-top: 30px;
+        }
+
+        .other-options ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .other-options ul li {
+            margin-bottom: 10px;
+        }
+
+        .other-options ul li a {
+            display: block;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .other-options ul li a:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body onload="mostrarCampos()">
+    <div class="decoration"></div>
+    <div class="container">
+        <h1>Crear Parte</h1>
+        <form action="listaPartes.html" method="post" enctype="multipart/form-data" id="parteForm">
+            <label for="incidente">Tipo de incidente:</label>
+            <select id="incidente" name="incidente" onchange="mostrarCampos()">
+                <option value="rotura" selected>Accidente doméstico</option>
+                <option value="fuga">Fuga de agua</option>
+                <option value="incendio">Incendio</option>
+            </select>
+
+            <div id="camposRotura" class="hidden">
+                <label for="tipoRotura">Tipo de rotura:</label>
+                <input type="text" id="tipoRotura" name="tipoRotura">
+            </div>
+
+            <div id="camposFuga" class="hidden">
+                <label for="ubicacionFuga">Ubicación de la fuga:</label>
+                <input type="text" id="ubicacionFuga" name="ubicacionFuga">
+            </div>
+
+            <div id="camposIncendio" class="hidden">
+                <label for="causaIncendio">Causa del incendio:</label>
+                <input type="text" id="causaIncendio" name="causaIncendio">
+            </div>
+
+            <label for="descripcion">Descripción:</label>
+            <input type="text" id="descripcion" name="descripcion" required>
+
+            <label for="foto">Foto del incidente:</label>
+            <input type="file" id="foto" name="foto" accept="image/*" onchange="mostrarNombreArchivo(this)">
+            <input type="hidden" id="rutaArchivo" name="ruta">
+            <input type="submit" class="btn" value="Enviar Parte">
+        </form>
+
+        <a href="index.html" class="btn">Volver</a>
+    </div>
+    <footer>
+        <p>Información de contacto:</p>
+        <p>Dirección: Av. Principal #123</p>
+        <p>Teléfono: 123-456-789</p>
+        <p>Correo electrónico: info@aseguradoraxyz.com</p>
+    </footer>
+
+    <script>
+        document.getElementById("parteForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            var tipo = document.getElementById("incidente").value;
+            var descripcion = document.getElementById("descripcion").value;
+            var direccionFoto = document.getElementById("rutaArchivo").value;
+            window.location.href = "listaPartes.html?tipo=" + encodeURIComponent(tipo) + "&descripcion=" + encodeURIComponent(descripcion) + "&direccionFoto=" + encodeURIComponent(direccionFoto);
+        });
+
+        function mostrarNombreArchivo(input) {
+            if (input.files && input.files.length > 0) {
+                var nombreArchivo = input.files[0].name;
+                var index = nombreArchivo.indexOf('image');
+                var rutaRelativa = nombreArchivo.substring(index);
+                document.getElementById("rutaArchivo").value = rutaRelativa;
+                return rutaRelativa;
+            }
+            return "";
+        }
+
+        function mostrarCampos() {
+            // Oculta todos los campos
+            document.getElementById("camposRotura").classList.add("hidden");
+            document.getElementById("camposFuga").classList.add("hidden");
+            document.getElementById("camposIncendio").classList.add("hidden");
+
+            var incidente = document.getElementById("incidente").value;
+
+            // Muestra los campos correspondientes al tipo de incidente seleccionado
+            if (incidente === "rotura") {
+                document.getElementById("camposRotura").classList.remove("hidden");
+            } else if (incidente === "fuga") {
+                document.getElementById("camposFuga").classList.remove("hidden");
+            } else if (incidente === "incendio") {
+                document.getElementById("camposIncendio").classList.remove("hidden");
+            }
+        }
+    </script>
+</body>
+</html>
