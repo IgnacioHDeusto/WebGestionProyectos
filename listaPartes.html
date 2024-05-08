@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ver Partes - Aseguradora RES</title>
     <style>
+        
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -15,7 +16,7 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 90%;
             margin: 50px auto;
             padding: 20px;
             background-color: #fff;
@@ -27,6 +28,21 @@
             color: #333;
         }
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
         .delete-btn {
             background-color: #dc3545;
             color: white;
@@ -34,39 +50,10 @@
             padding: 5px 10px;
             border-radius: 3px;
             cursor: pointer;
-            margin-left: 10px; 
         }
 
         .delete-btn:hover {
             background-color: #c82333;
-        }
-
-        form {
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        input[type="text"], input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-        }
-
-        input[type="file"] {
-            cursor: pointer;
-        }
-
-        .hidden {
-            display: none;
         }
 
         footer {
@@ -154,17 +141,14 @@
         .other-options ul li a:hover {
             background-color: #e0e0e0;
         }
+   
     </style>
 </head>
 <body>
     <div class="decoration"></div>
     <div class="container">
         <h1>Ver Partes</h1>
-        <p>Lista: </p>
-        <ul id="listaPartes">
-            <!-- Aquí se agregarán dinámicamente los partes -->
-        </ul>
-
+        <div id="tablaPartes"></div>
         <a href="index.html" class="btn">Volver</a>
     </div>
     <footer>
@@ -186,58 +170,72 @@
         var descripcion = obtenerParametro("descripcion");
         var direccionFoto = obtenerParametro("direccionFoto");
 
-        console.log("Tipo:", tipo);
-        console.log("Descripción:", descripcion);
-        console.log("Dirección de la foto:", direccionFoto);
-
         if (tipo && descripcion && direccionFoto) {
-            console.log("Agregando parte...");
             agregarParte(tipo, descripcion, direccionFoto);
         }        
 
         function agregarParte(tipo, descripcion, direccionFoto) {
             if (tipo && descripcion && direccionFoto) {
+                var nombre = obtenerParametro("nombre");
+                var telefono = obtenerParametro("telefono");
+                var poliza = obtenerParametro("poliza");
+
                 var nuevaParte = {
                     tipo: tipo,
                     descripcion: descripcion,
-                    foto: direccionFoto, // Usamos la dirección de la foto proporcionada
+                    nombre: nombre,
+                    telefono: telefono,
+                    poliza: poliza,
+                    foto: direccionFoto,
                     estado: "En espera de revisión"
                 };
 
                 partes.push(nuevaParte);
                 localStorage.setItem('partes', JSON.stringify(partes));
-                console.log("Parte agregada:", nuevaParte);
             }
         }
 
         function mostrarPartes() {
-            var listaPartes = document.getElementById("listaPartes");
-            listaPartes.innerHTML = '';
+            var tablaPartes = document.getElementById("tablaPartes");
+            tablaPartes.innerHTML = '';
+
+            var table = document.createElement("table");
+            var header = table.createTHead();
+            var row = header.insertRow(0);
+            var headers = ["Tipo", "Descripción", "Nombre del titular", "Teléfono del titular", "Número de póliza", "Foto", "Acciones"];
+
+            headers.forEach(function(headerText) {
+                var th = document.createElement("th");
+                th.textContent = headerText;
+                row.appendChild(th);
+            });
+
+            var body = table.createTBody();
 
             partes.forEach(function(parte, index) {
                 if (parte) {
-                    var listItem = document.createElement("li");
-                    listItem.innerHTML = `
-                        <strong>Tipo:</strong> ${parte.tipo}<br>
-                        <strong>Descripción:</strong> ${parte.descripcion}<br>
-                        <img src="${parte.foto}" alt="Foto del incidente"><br>
-                        <button class="delete-btn" onclick="borrarParte(${index})">Eliminar</button><br><br>
+                    var tr = body.insertRow();
+
+                    tr.innerHTML = `
+                        <td>${parte.tipo}</td>
+                        <td>${parte.descripcion}</td>
+                        <td>${parte.nombre}</td>
+                        <td>${parte.telefono}</td>
+                        <td>${parte.poliza}</td>
+                        <td><img src="${parte.foto}" alt="Foto del incidente" style="max-width: 100px; max-height: 100px;"></td>
+                        <td><button class="delete-btn" onclick="borrarParte(${index})">Eliminar</button></td>
                     `;
-                    listaPartes.appendChild(listItem);
                 }
             });
-        }
 
+            tablaPartes.appendChild(table);
+        }
 
         function borrarParte(index) {
             partes.splice(index, 1);
             localStorage.setItem('partes', JSON.stringify(partes));
             mostrarPartes();
         }
-
-        window.onload = function() {
-            mostrarPartes();
-        };
 
         window.onload = function() {
             mostrarPartes();

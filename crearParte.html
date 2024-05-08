@@ -147,6 +147,22 @@
     <div class="container">
         <h1>Crear Parte</h1>
         <form action="listaPartes.html" method="post" enctype="multipart/form-data" id="parteForm">
+            <label for="nombre">Nombre del titular:</label>
+            <input type="text" id="nombre" name="nombre" required>
+
+            <label for="direccion">Dirección del titular:</label>
+            <input type="text" id="direccion" name="direccion">
+
+            <label for="telefono">Teléfono del titular:</label>
+            <input type="tel" id="telefono" name="telefono">
+
+            <label for="email">Correo electrónico del titular:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="poliza">Número de póliza:</label>
+            <input type="text" id="poliza" name="poliza" required>
+
+           
             <label for="incidente">Tipo de incidente:</label>
             <select id="incidente" name="incidente" onchange="mostrarCampos()">
                 <option value="rotura" selected>Accidente doméstico</option>
@@ -193,9 +209,14 @@
             var tipo = document.getElementById("incidente").value;
             var descripcion = document.getElementById("descripcion").value;
             var direccionFoto = document.getElementById("rutaArchivo").value;
-            window.location.href = "listaPartes.html?tipo=" + encodeURIComponent(tipo) + "&descripcion=" + encodeURIComponent(descripcion) + "&direccionFoto=" + encodeURIComponent(direccionFoto);
+            var nombre = document.getElementById("nombre").value;
+            var telefono = document.getElementById("telefono").value;
+            var poliza = document.getElementById("poliza").value;
+            agregarParte(tipo, descripcion, direccionFoto, nombre, telefono, poliza);
+            // Aquí podrías redirigir a otra página si lo deseas
+            window.location.href = "index.html";
         });
-
+    
         function mostrarNombreArchivo(input) {
             if (input.files && input.files.length > 0) {
                 var nombreArchivo = input.files[0].name;
@@ -206,16 +227,14 @@
             }
             return "";
         }
-
+    
         function mostrarCampos() {
-            // Oculta todos los campos
             document.getElementById("camposRotura").classList.add("hidden");
             document.getElementById("camposFuga").classList.add("hidden");
             document.getElementById("camposIncendio").classList.add("hidden");
-
+    
             var incidente = document.getElementById("incidente").value;
-
-            // Muestra los campos correspondientes al tipo de incidente seleccionado
+    
             if (incidente === "rotura") {
                 document.getElementById("camposRotura").classList.remove("hidden");
             } else if (incidente === "fuga") {
@@ -223,6 +242,23 @@
             } else if (incidente === "incendio") {
                 document.getElementById("camposIncendio").classList.remove("hidden");
             }
+        }
+    
+        function agregarParte(tipo, descripcion, direccionFoto, nombre, telefono, poliza) {
+            var partes = JSON.parse(localStorage.getItem('partes')) || [];
+            var nuevaParte = {
+                tipo: tipo,
+                descripcion: descripcion,
+                foto: direccionFoto,
+                nombre: nombre,
+                telefono: telefono,
+                poliza: poliza,
+                estado: "En espera de revisión"
+            };
+            partes.push(nuevaParte);
+            localStorage.setItem('partes', JSON.stringify(partes));
+            console.log("Parte agregada:", nuevaParte);
+            // Aquí podrías redirigir a otra página si lo deseas
         }
     </script>
 </body>
